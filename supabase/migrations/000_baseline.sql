@@ -81,5 +81,5 @@ create table if not exists public.messages (
 
 create table if not exists public.pricing_tiers (
   id uuid primary key default uuid_generate_v4(),
-  created_at timestamptz not null default now_
+  created_at timestamptz not null default now()
 
