@@ -1,0 +1,15 @@
+name: Migrate Dev DB
+on:
+  push:
+    branches: [ "main" ]
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+      - name: Apply migrations to DEV
+        env:
+          SUPABASE_DB_URL_DEV: ${{ secrets.SUPABASE_DB_URL_DEV }}
+        run: |
+          supabase db push --db-url "$SUPABASE_DB_URL_DEV"
