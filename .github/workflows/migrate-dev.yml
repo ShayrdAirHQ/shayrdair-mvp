@@ -12,4 +12,8 @@ jobs:
         env:
           SUPABASE_DB_URL_DEV: ${{ secrets.SUPABASE_DB_URL_DEV }}
         run: |
-          supabase db push --db-url "$SUPABASE_DB_URL_DEV"
+          # normalize: remove any CR/LF/control chars from the secret
+          DB_URL="$(printf "%s" "$SUPABASE_DB_URL_DEV" | tr -d '\r' | tr -d '\n' | tr -d '\t')"
+          # quick scheme check (won't leak secret)
+          echo "Using scheme: $(printf "%s" "$DB_URL" | cut -d: -f1)"
+          supabase db push --db-url "$DB_URL"
