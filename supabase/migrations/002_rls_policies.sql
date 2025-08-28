@@ -18,7 +18,7 @@ create policy "guides_owner_write" on public.guides
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 create policy "experiences_public_read_published" on public.experiences
-  for select using (status = 'published');
+  for select using (status::text = 'published');
 create policy "experiences_owner_write" on public.experiences
   for all using (
     exists (select 1 from public.guides g where g.id = experiences.guide_id and g.user_id = auth.uid())
