@@ -116,4 +116,3 @@ create table if not exists public.availabilities (
 
 create index if not exists idx_experiences_slug on public.experiences(slug);
 create index if not exists idx_messages_conversation on public.messages(conversation_id);
-create index if not exists idx_availabilities_guide_time on public.availabilities(guide_user_id, starts_at);
