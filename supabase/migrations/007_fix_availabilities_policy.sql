@@ -1,41 +1,30 @@
 drop policy if exists "availabilities_owner_write" on public.availabilities;
 
-create policy "availabilities_owner_write" on public.availabilities
-for all using (
-  exists (
-    select 1
-    from public.availabilities a
-    where a.id = availabilities.id and (
-      (
-        (select count(*) from information_schema.columns
-          where table_schema='public' and table_name='availabilities' and column_name='guide_user_id') > 0
-        and a.guide_user_id = auth.uid()
-      )
-      or
-      (
-        (select count(*) from information_schema.columns
-          where table_schema='public' and table_name='availabilities' and column_name='guide_id') > 0
-        and a.guide_id = auth.uid()
-      )
-    )
-  )
-)
-with check (
-  exists (
-    select 1
-    from public.availabilities a
-    where a.id = availabilities.id and (
-      (
-        (select count(*) from information_schema.columns
-          where table_schema='public' and table_name='availabilities' and column_name='guide_user_id') > 0
-        and a.guide_user_id = auth.uid()
-      )
-      or
-      (
-        (select count(*) from information_schema.columns
-          where table_schema='public' and table_name='availabilities' and column_name='guide_id') > 0
-        and a.guide_id = auth.uid()
-      )
-    )
-  )
-);
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema='public' and table_name='availabilities' and column_name='guide_user_id'
+  ) then
+    execute $p$
+      create policy "availabilities_owner_write" on public.availabilities
+      for all using (guide_user_id = auth.uid())
+      with check (guide_user_id = auth.uid());
+    $p$;
+  elsif exists (
+    select 1 from information_schema.columns
+    where table_schema='public' and table_name='availabilities' and column_name='guide_id'
+  ) then
+    execute $p$
+      create policy "availabilities_owner_write" on public.availabilities
+      for all using (guide_id = auth.uid())
+      with check (guide_id = auth.uid());
+    $p$;
+  else
+    execute $p$
+      create policy "availabilities_owner_write" on public.availabilities
+      for all using (auth.uid() is not null)
+      with check (auth.uid() is not null);
+    $p$;
+  end if;
+end $$;
