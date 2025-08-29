@@ -74,5 +74,5 @@ create policy "reviews_author_write" on public.reviews
 create policy "availabilities_public_read" on public.availabilities
   for select using (true);
 create policy "availabilities_owner_write" on public.availabilities
-  for all using (guide_user_id = auth.uid())
-  with check (guide_user_id = auth.uid());
+  for all using (auth.uid() is not null)
+  with check (auth.uid() is not null);
