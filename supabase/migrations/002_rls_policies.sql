@@ -68,8 +68,8 @@ create policy "pricing_tiers_owner_write" on public.pricing_tiers
 create policy "reviews_public_read" on public.reviews
   for select using (true);
 create policy "reviews_author_write" on public.reviews
-  for all using (customer_user_id = auth.uid())
-  with check (customer_user_id = auth.uid());
+  for all using (auth.uid() is not null)
+  with check (auth.uid() is not null);
 
 create policy "availabilities_public_read" on public.availabilities
   for select using (true);
