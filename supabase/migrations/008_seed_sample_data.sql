@@ -7,6 +7,14 @@ ALTER TABLE public.pricing_tiers
   ADD COLUMN IF NOT EXISTS label text,
   ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now();
 
+DELETE FROM public.pricing_tiers
+WHERE experience_id = '55555555-5555-5555-5555-555555555555'
+  AND id NOT IN (
+    '66666666-6666-6666-6666-666666666661',
+    '66666666-6666-6666-6666-666666666662',
+    '66666666-6666-6666-6666-666666666663'
+  );
+
 INSERT INTO public.users (id, email, full_name, role, phone_number, created_at)
 VALUES
   ('11111111-1111-1111-1111-111111111111','guide.alex@example.com','Alex Rivera','guide','+1-720-555-0101',now()),
