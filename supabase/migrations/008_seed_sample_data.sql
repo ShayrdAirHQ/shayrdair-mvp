@@ -4,7 +4,18 @@ ALTER TABLE public.pricing_tiers
   ADD COLUMN IF NOT EXISTS min_group_size smallint,
   ADD COLUMN IF NOT EXISTS max_group_size smallint,
   ADD COLUMN IF NOT EXISTS price numeric(10,2),
+  ADD COLUMN IF NOT EXISTS price_cents integer,
+  ADD COLUMN IF NOT EXISTS quantity_min smallint,
+  ADD COLUMN IF NOT EXISTS quantity_max smallint,
   ADD COLUMN IF NOT EXISTS label text,
+  ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now();
+
+ALTER TABLE public.availabilities
+  ADD COLUMN IF NOT EXISTS start_at timestamptz,
+  ADD COLUMN IF NOT EXISTS end_at timestamptz,
+  ADD COLUMN IF NOT EXISTS slots_total integer,
+  ADD COLUMN IF NOT EXISTS slots_booked integer DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS status text DEFAULT 'open',
   ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now();
 
 DELETE FROM public.pricing_tiers
