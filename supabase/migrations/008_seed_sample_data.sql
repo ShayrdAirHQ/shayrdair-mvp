@@ -1,6 +1,5 @@
 BEGIN;
 
--- pricing_tiers: add any missing columns (safe if already present)
 ALTER TABLE public.pricing_tiers
   ADD COLUMN IF NOT EXISTS min_group_size smallint,
   ADD COLUMN IF NOT EXISTS max_group_size smallint,
@@ -11,7 +10,6 @@ ALTER TABLE public.pricing_tiers
   ADD COLUMN IF NOT EXISTS label text,
   ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now();
 
--- availabilities: support both naming styles and include required capacity
 ALTER TABLE public.availabilities
   ADD COLUMN IF NOT EXISTS guide_user_id uuid,
   ADD COLUMN IF NOT EXISTS starts_at timestamptz,
@@ -24,7 +22,11 @@ ALTER TABLE public.availabilities
   ADD COLUMN IF NOT EXISTS status text DEFAULT 'open',
   ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now();
 
--- keep 3 canonical tier rows (idempotent)
+ALTER TABLE public.reviews
+  ADD COLUMN IF NOT EXISTS author_user_id uuid,
+  ADD COLUMN IF NOT EXISTS user_id uuid,
+  ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now();
+
 DELETE FROM public.pricing_tiers
 WHERE experience_id = '55555555-5555-5555-5555-555555555555'
   AND id NOT IN (
@@ -96,7 +98,6 @@ SET experience_id=EXCLUDED.experience_id,
     price=EXCLUDED.price,
     label=EXCLUDED.label;
 
--- availabilities with capacity and starts_at/ends_at
 INSERT INTO public.availabilities
   (id, experience_id, guide_user_id, starts_at, ends_at, capacity, slots_total, slots_booked, status, created_at) VALUES
 ('77777777-7777-7777-7777-777777777771','55555555-5555-5555-5555-555555555555','11111111-1111-1111-1111-111111111111',
@@ -113,7 +114,6 @@ SET experience_id=EXCLUDED.experience_id,
     slots_booked=EXCLUDED.slots_booked,
     status=EXCLUDED.status;
 
--- keep start_at/end_at mirrors in sync if those columns exist
 UPDATE public.availabilities
 SET start_at = COALESCE(start_at, starts_at),
     end_at   = COALESCE(end_at,   ends_at)
@@ -131,10 +131,10 @@ INSERT INTO public.messages (id, conversation_id, sender_user_id, content, creat
 ON CONFLICT (id) DO UPDATE
 SET conversation_id=EXCLUDED.conversation_id, sender_user_id=EXCLUDED.sender_user_id, content=EXCLUDED.content;
 
-INSERT INTO public.reviews (id, experience_id, author_user_id, rating, title, body, created_at) VALUES
-('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','55555555-5555-5555-5555-555555555555','22222222-2222-2222-2222-222222222222',5,'Exactly what I needed to progress','Alex delivered an awesome, safety-focused half day. Clear coaching on clipping and cleaning anchors—left feeling confident to push into 5.10.',now())
+INSERT INTO public.reviews (id, experience_id, author_user_id, user_id, rating, title, body, created_at) VALUES
+('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','55555555-5555-5555-5555-555555555555','22222222-2222-2222-2222-222222222222','22222222-2222-2222-2222-222222222222',5,'Exactly what I needed to progress','Alex delivered an awesome, safety-focused half day. Clear coaching on clipping and cleaning anchors—left feeling confident to push into 5.10.',now())
 ON CONFLICT (id) DO UPDATE
-SET experience_id=EXCLUDED.experience_id, author_user_id=EXCLUDED.author_user_id, rating=EXCLUDED.rating, title=EXCLUDED.title, body=EXCLUDED.body;
+SET experience_id=EXCLUDED.experience_id, author_user_id=EXCLUDED.author_user_id, user_id=EXCLUDED.user_id, rating=EXCLUDED.rating, title=EXCLUDED.title, body=EXCLUDED.body;
 
 UPDATE public.conversations
 SET last_message_at = GREATEST(last_message_at, (SELECT MAX(created_at) FROM public.messages WHERE conversation_id = conversations.id))
