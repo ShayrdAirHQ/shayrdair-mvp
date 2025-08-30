@@ -11,6 +11,7 @@ ALTER TABLE public.pricing_tiers
   ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now();
 
 ALTER TABLE public.availabilities
+  ADD COLUMN IF NOT EXISTS guide_user_id uuid,
   ADD COLUMN IF NOT EXISTS start_at timestamptz,
   ADD COLUMN IF NOT EXISTS end_at timestamptz,
   ADD COLUMN IF NOT EXISTS slots_total integer,
@@ -89,12 +90,20 @@ SET experience_id=EXCLUDED.experience_id,
     price=EXCLUDED.price,
     label=EXCLUDED.label;
 
-INSERT INTO public.availabilities (id, experience_id, start_at, end_at, slots_total, slots_booked, status, created_at) VALUES
-('77777777-7777-7777-7777-777777777771','55555555-5555-5555-5555-555555555555',(now()+INTERVAL '7 days')::timestamptz,(now()+INTERVAL '7 days'+INTERVAL '4 hours')::timestamptz,6,0,'open',now()),
-('77777777-7777-7777-7777-777777777772','55555555-5555-5555-5555-555555555555',(now()+INTERVAL '14 days')::timestamptz,(now()+INTERVAL '14 days'+INTERVAL '4 hours')::timestamptz,6,2,'open',now())
+INSERT INTO public.availabilities
+  (id, experience_id, guide_user_id, start_at, end_at, slots_total, slots_booked, status, created_at) VALUES
+('77777777-7777-7777-7777-777777777771','55555555-5555-5555-5555-555555555555','11111111-1111-1111-1111-111111111111',
+ (now()+INTERVAL '7 days')::timestamptz,(now()+INTERVAL '7 days'+INTERVAL '4 hours')::timestamptz,6,0,'open',now()),
+('77777777-7777-7777-7777-777777777772','55555555-5555-5555-5555-555555555555','11111111-1111-1111-1111-111111111111',
+ (now()+INTERVAL '14 days')::timestamptz,(now()+INTERVAL '14 days'+INTERVAL '4 hours')::timestamptz,6,2,'open',now())
 ON CONFLICT (id) DO UPDATE
-SET experience_id=EXCLUDED.experience_id, start_at=EXCLUDED.start_at, end_at=EXCLUDED.end_at,
-    slots_total=EXCLUDED.slots_total, slots_booked=EXCLUDED.slots_booked, status=EXCLUDED.status;
+SET experience_id=EXCLUDED.experience_id,
+    guide_user_id=EXCLUDED.guide_user_id,
+    start_at=EXCLUDED.start_at,
+    end_at=EXCLUDED.end_at,
+    slots_total=EXCLUDED.slots_total,
+    slots_booked=EXCLUDED.slots_booked,
+    status=EXCLUDED.status;
 
 INSERT INTO public.conversations (id, created_at, customer_user_id, guide_user_id, experience_id, last_message_at, status) VALUES
 ('88888888-8888-8888-8888-888888888888',now(),'22222222-2222-2222-2222-222222222222','11111111-1111-1111-1111-111111111111','55555555-5555-5555-5555-555555555555',now(),'open')
@@ -118,3 +127,5 @@ SET last_message_at = GREATEST(last_message_at, (SELECT MAX(created_at) FROM pub
 WHERE id = '88888888-8888-8888-8888-888888888888';
 
 COMMIT;
+
+
