@@ -15,17 +15,15 @@ WHERE experience_id = '55555555-5555-5555-5555-555555555555'
     '66666666-6666-6666-6666-666666666663'
   );
 
-INSERT INTO public.users (id, email, full_name, role, phone_number, created_at)
-VALUES
-  ('11111111-1111-1111-1111-111111111111','guide.alex@example.com','Alex Rivera','guide','+1-720-555-0101',now()),
-  ('22222222-2222-2222-2222-222222222222','customer.taylor@example.com','Taylor Kim','customer','+1-303-555-0202',now()),
-  ('33333333-3333-3333-3333-333333333333','admin.test@example.com','Admin Test','admin','+1-970-555-0303',now())
+INSERT INTO public.users (id, email, full_name, role, phone_number, created_at) VALUES
+('11111111-1111-1111-1111-111111111111','guide.alex@example.com','Alex Rivera','guide','+1-720-555-0101',now()),
+('22222222-2222-2222-2222-222222222222','customer.taylor@example.com','Taylor Kim','customer','+1-303-555-0202',now()),
+('33333333-3333-3333-3333-333333333333','admin.test@example.com','Admin Test','admin','+1-970-555-0303',now())
 ON CONFLICT (id) DO UPDATE
 SET email=EXCLUDED.email, full_name=EXCLUDED.full_name, role=EXCLUDED.role, phone_number=EXCLUDED.phone_number;
 
-INSERT INTO public.guides (id, user_id, bio, profile_image_url, created_at)
-VALUES
-  ('44444444-4444-4444-4444-444444444444','11111111-1111-1111-1111-111111111111','AMGA Single-Pitch Instructor with 10+ years guiding in Clear Creek and Eldorado Canyon. Patient, safety-first, stoked on helping climbers progress.','https://images.example.com/guides/alex-rivera.jpg',now())
+INSERT INTO public.guides (id, user_id, bio, profile_image_url, created_at) VALUES
+('44444444-4444-4444-4444-444444444444','11111111-1111-1111-1111-111111111111','AMGA Single-Pitch Instructor with 10+ years guiding in Clear Creek and Eldorado Canyon. Patient, safety-first, stoked on helping climbers progress.','https://images.example.com/guides/alex-rivera.jpg',now())
 ON CONFLICT (id) DO UPDATE
 SET user_id=EXCLUDED.user_id, bio=EXCLUDED.bio, profile_image_url=EXCLUDED.profile_image_url;
 
@@ -66,16 +64,17 @@ SET guide_id=EXCLUDED.guide_id, title=EXCLUDED.title, slug=EXCLUDED.slug, short_
     meta_description=EXCLUDED.meta_description, calendar_embed_code=EXCLUDED.calendar_embed_code;
 
 INSERT INTO public.pricing_tiers
-  (id, experience_id, min_group_size, max_group_size, quantity_min, quantity_max, price, label, created_at) VALUES
-('66666666-6666-6666-6666-666666666661','55555555-5555-5555-5555-555555555555',1,1,1,1,225.00,'Solo',now()),
-('66666666-6666-6666-6666-666666666662','55555555-5555-5555-5555-555555555555',2,3,2,3,175.00,'Small group',now()),
-('66666666-6666-6666-6666-666666666663','55555555-5555-5555-5555-555555555555',4,6,4,6,135.00,'Crew rate',now())
+  (id, experience_id, min_group_size, max_group_size, quantity_min, quantity_max, price_cents, price, label, created_at) VALUES
+('66666666-6666-6666-6666-666666666661','55555555-5555-5555-5555-555555555555',1,1,1,1,22500,225.00,'Solo',now()),
+('66666666-6666-6666-6666-666666666662','55555555-5555-5555-5555-555555555555',2,3,2,3,17500,175.00,'Small group',now()),
+('66666666-6666-6666-6666-666666666663','55555555-5555-5555-5555-555555555555',4,6,4,6,13500,135.00,'Crew rate',now())
 ON CONFLICT (id) DO UPDATE
 SET experience_id=EXCLUDED.experience_id,
     min_group_size=EXCLUDED.min_group_size,
     max_group_size=EXCLUDED.max_group_size,
     quantity_min=EXCLUDED.quantity_min,
     quantity_max=EXCLUDED.quantity_max,
+    price_cents=EXCLUDED.price_cents,
     price=EXCLUDED.price,
     label=EXCLUDED.label;
 
