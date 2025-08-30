@@ -11,13 +11,14 @@ ALTER TABLE public.pricing_tiers
   ADD COLUMN IF NOT EXISTS label text,
   ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now();
 
--- availabilities: support both naming styles; we’ll write to starts_at/ends_at
+-- availabilities: support both naming styles and include required capacity
 ALTER TABLE public.availabilities
   ADD COLUMN IF NOT EXISTS guide_user_id uuid,
   ADD COLUMN IF NOT EXISTS starts_at timestamptz,
   ADD COLUMN IF NOT EXISTS ends_at timestamptz,
   ADD COLUMN IF NOT EXISTS start_at timestamptz,
   ADD COLUMN IF NOT EXISTS end_at timestamptz,
+  ADD COLUMN IF NOT EXISTS capacity integer,
   ADD COLUMN IF NOT EXISTS slots_total integer,
   ADD COLUMN IF NOT EXISTS slots_booked integer DEFAULT 0,
   ADD COLUMN IF NOT EXISTS status text DEFAULT 'open',
@@ -95,23 +96,24 @@ SET experience_id=EXCLUDED.experience_id,
     price=EXCLUDED.price,
     label=EXCLUDED.label;
 
--- NOTE: use starts_at / ends_at to satisfy NOT NULL columns in your schema
+-- availabilities with capacity and starts_at/ends_at
 INSERT INTO public.availabilities
-  (id, experience_id, guide_user_id, starts_at, ends_at, slots_total, slots_booked, status, created_at) VALUES
+  (id, experience_id, guide_user_id, starts_at, ends_at, capacity, slots_total, slots_booked, status, created_at) VALUES
 ('77777777-7777-7777-7777-777777777771','55555555-5555-5555-5555-555555555555','11111111-1111-1111-1111-111111111111',
- (now()+INTERVAL '7 days')::timestamptz,(now()+INTERVAL '7 days'+INTERVAL '4 hours')::timestamptz,6,0,'open',now()),
+ (now()+INTERVAL '7 days')::timestamptz,(now()+INTERVAL '7 days'+INTERVAL '4 hours')::timestamptz,6,6,0,'open',now()),
 ('77777777-7777-7777-7777-777777777772','55555555-5555-5555-5555-555555555555','11111111-1111-1111-1111-111111111111',
- (now()+INTERVAL '14 days')::timestamptz,(now()+INTERVAL '14 days'+INTERVAL '4 hours')::timestamptz,6,2,'open',now())
+ (now()+INTERVAL '14 days')::timestamptz,(now()+INTERVAL '14 days'+INTERVAL '4 hours')::timestamptz,6,6,2,'open',now())
 ON CONFLICT (id) DO UPDATE
 SET experience_id=EXCLUDED.experience_id,
     guide_user_id=EXCLUDED.guide_user_id,
     starts_at=EXCLUDED.starts_at,
     ends_at=EXCLUDED.ends_at,
+    capacity=EXCLUDED.capacity,
     slots_total=EXCLUDED.slots_total,
     slots_booked=EXCLUDED.slots_booked,
     status=EXCLUDED.status;
 
--- keep start_at/end_at in sync if those columns exist
+-- keep start_at/end_at mirrors in sync if those columns exist
 UPDATE public.availabilities
 SET start_at = COALESCE(start_at, starts_at),
     end_at   = COALESCE(end_at,   ends_at)
