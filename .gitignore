@@ -6,3 +6,29 @@ node_modules/
 .supabase/
 supabase/.temp/
 docker/
+
+# Webflow exports and local artifacts
+webflow-export.zip
+.DS_Store
+node_modules
+.vercel
+.netlify
+.env
+.env.*
+
+# Webflow exports & local artifacts
+webflow-export.zip
+.DS_Store
+node_modules
+.vercel
+.netlify
+.env
+.env.*
+
+webflow-export.zip
+.DS_Store
+node_modules
+.vercel
+.netlify
+.env
+.env.*

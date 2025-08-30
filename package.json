@@ -1,0 +1,19 @@
+{
+  "name": "shayrdairhq",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "lint:html": "npx html-validate \"webflow-export/**/*.html\"",
+    "lint:css": "npx stylelint \"webflow-export/**/*.css\"",
+    "format": "npx prettier --write \"**/*.{html,css,js,json,md,yml,yaml}\""
+  },
+  "devDependencies": {
+    "html-validate": "^8.7.4",
+    "prettier": "^3.3.3",
+    "stylelint": "^16.7.0",
+    "stylelint-config-standard": "^36.0.0"
+  },
+  "stylelint": {
+    "extends": "stylelint-config-standard"
+  }
+}

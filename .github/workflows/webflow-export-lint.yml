@@ -1,0 +1,13 @@
+name: webflow-export-lint
+on:
+  pull_request:
+    paths:
+      - "webflow-export/**"
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm i
+      - run: npm run lint:html
+      - run: npm run lint:css
