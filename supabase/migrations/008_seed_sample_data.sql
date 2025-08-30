@@ -25,6 +25,7 @@ ALTER TABLE public.availabilities
 ALTER TABLE public.reviews
   ADD COLUMN IF NOT EXISTS author_user_id uuid,
   ADD COLUMN IF NOT EXISTS user_id uuid,
+  ADD COLUMN IF NOT EXISTS customer_user_id uuid,
   ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now();
 
 DELETE FROM public.pricing_tiers
@@ -131,10 +132,16 @@ INSERT INTO public.messages (id, conversation_id, sender_user_id, content, creat
 ON CONFLICT (id) DO UPDATE
 SET conversation_id=EXCLUDED.conversation_id, sender_user_id=EXCLUDED.sender_user_id, content=EXCLUDED.content;
 
-INSERT INTO public.reviews (id, experience_id, author_user_id, user_id, rating, title, body, created_at) VALUES
-('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','55555555-5555-5555-5555-555555555555','22222222-2222-2222-2222-222222222222','22222222-2222-2222-2222-222222222222',5,'Exactly what I needed to progress','Alex delivered an awesome, safety-focused half day. Clear coaching on clipping and cleaning anchors—left feeling confident to push into 5.10.',now())
+INSERT INTO public.reviews (id, experience_id, author_user_id, user_id, customer_user_id, rating, title, body, created_at) VALUES
+('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','55555555-5555-5555-5555-555555555555','22222222-2222-2222-2222-222222222222','22222222-2222-2222-2222-222222222222','22222222-2222-2222-2222-222222222222',5,'Exactly what I needed to progress','Alex delivered an awesome, safety-focused half day. Clear coaching on clipping and cleaning anchors—left feeling confident to push into 5.10.',now())
 ON CONFLICT (id) DO UPDATE
-SET experience_id=EXCLUDED.experience_id, author_user_id=EXCLUDED.author_user_id, user_id=EXCLUDED.user_id, rating=EXCLUDED.rating, title=EXCLUDED.title, body=EXCLUDED.body;
+SET experience_id=EXCLUDED.experience_id,
+    author_user_id=EXCLUDED.author_user_id,
+    user_id=EXCLUDED.user_id,
+    customer_user_id=EXCLUDED.customer_user_id,
+    rating=EXCLUDED.rating,
+    title=EXCLUDED.title,
+    body=EXCLUDED.body;
 
 UPDATE public.conversations
 SET last_message_at = GREATEST(last_message_at, (SELECT MAX(created_at) FROM public.messages WHERE conversation_id = conversations.id))
