@@ -1,5 +1,6 @@
 BEGIN;
 
+-- pricing_tiers: add any missing columns (safe if already present)
 ALTER TABLE public.pricing_tiers
   ADD COLUMN IF NOT EXISTS min_group_size smallint,
   ADD COLUMN IF NOT EXISTS max_group_size smallint,
@@ -10,8 +11,11 @@ ALTER TABLE public.pricing_tiers
   ADD COLUMN IF NOT EXISTS label text,
   ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now();
 
+-- availabilities: support both naming styles; we’ll write to starts_at/ends_at
 ALTER TABLE public.availabilities
   ADD COLUMN IF NOT EXISTS guide_user_id uuid,
+  ADD COLUMN IF NOT EXISTS starts_at timestamptz,
+  ADD COLUMN IF NOT EXISTS ends_at timestamptz,
   ADD COLUMN IF NOT EXISTS start_at timestamptz,
   ADD COLUMN IF NOT EXISTS end_at timestamptz,
   ADD COLUMN IF NOT EXISTS slots_total integer,
@@ -19,6 +23,7 @@ ALTER TABLE public.availabilities
   ADD COLUMN IF NOT EXISTS status text DEFAULT 'open',
   ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now();
 
+-- keep 3 canonical tier rows (idempotent)
 DELETE FROM public.pricing_tiers
 WHERE experience_id = '55555555-5555-5555-5555-555555555555'
   AND id NOT IN (
@@ -90,8 +95,9 @@ SET experience_id=EXCLUDED.experience_id,
     price=EXCLUDED.price,
     label=EXCLUDED.label;
 
+-- NOTE: use starts_at / ends_at to satisfy NOT NULL columns in your schema
 INSERT INTO public.availabilities
-  (id, experience_id, guide_user_id, start_at, end_at, slots_total, slots_booked, status, created_at) VALUES
+  (id, experience_id, guide_user_id, starts_at, ends_at, slots_total, slots_booked, status, created_at) VALUES
 ('77777777-7777-7777-7777-777777777771','55555555-5555-5555-5555-555555555555','11111111-1111-1111-1111-111111111111',
  (now()+INTERVAL '7 days')::timestamptz,(now()+INTERVAL '7 days'+INTERVAL '4 hours')::timestamptz,6,0,'open',now()),
 ('77777777-7777-7777-7777-777777777772','55555555-5555-5555-5555-555555555555','11111111-1111-1111-1111-111111111111',
@@ -99,11 +105,17 @@ INSERT INTO public.availabilities
 ON CONFLICT (id) DO UPDATE
 SET experience_id=EXCLUDED.experience_id,
     guide_user_id=EXCLUDED.guide_user_id,
-    start_at=EXCLUDED.start_at,
-    end_at=EXCLUDED.end_at,
+    starts_at=EXCLUDED.starts_at,
+    ends_at=EXCLUDED.ends_at,
     slots_total=EXCLUDED.slots_total,
     slots_booked=EXCLUDED.slots_booked,
     status=EXCLUDED.status;
+
+-- keep start_at/end_at in sync if those columns exist
+UPDATE public.availabilities
+SET start_at = COALESCE(start_at, starts_at),
+    end_at   = COALESCE(end_at,   ends_at)
+WHERE id IN ('77777777-7777-7777-7777-777777777771','77777777-7777-7777-7777-777777777772');
 
 INSERT INTO public.conversations (id, created_at, customer_user_id, guide_user_id, experience_id, last_message_at, status) VALUES
 ('88888888-8888-8888-8888-888888888888',now(),'22222222-2222-2222-2222-222222222222','11111111-1111-1111-1111-111111111111','55555555-5555-5555-5555-555555555555',now(),'open')
@@ -127,5 +139,3 @@ SET last_message_at = GREATEST(last_message_at, (SELECT MAX(created_at) FROM pub
 WHERE id = '88888888-8888-8888-8888-888888888888';
 
 COMMIT;
-
-
