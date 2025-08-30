@@ -65,13 +65,19 @@ SET guide_id=EXCLUDED.guide_id, title=EXCLUDED.title, slug=EXCLUDED.slug, short_
     internal_notes=EXCLUDED.internal_notes, tags=EXCLUDED.tags, meta_title=EXCLUDED.meta_title,
     meta_description=EXCLUDED.meta_description, calendar_embed_code=EXCLUDED.calendar_embed_code;
 
-INSERT INTO public.pricing_tiers (id, experience_id, min_group_size, max_group_size, price, label, created_at) VALUES
-('66666666-6666-6666-6666-666666666661','55555555-5555-5555-5555-555555555555',1,1,225.00,'Solo',now()),
-('66666666-6666-6666-6666-666666666662','55555555-5555-5555-5555-555555555555',2,3,175.00,'Small group',now()),
-('66666666-6666-6666-6666-666666666663','55555555-5555-5555-5555-555555555555',4,6,135.00,'Crew rate',now())
+INSERT INTO public.pricing_tiers
+  (id, experience_id, min_group_size, max_group_size, quantity_min, quantity_max, price, label, created_at) VALUES
+('66666666-6666-6666-6666-666666666661','55555555-5555-5555-5555-555555555555',1,1,1,1,225.00,'Solo',now()),
+('66666666-6666-6666-6666-666666666662','55555555-5555-5555-5555-555555555555',2,3,2,3,175.00,'Small group',now()),
+('66666666-6666-6666-6666-666666666663','55555555-5555-5555-5555-555555555555',4,6,4,6,135.00,'Crew rate',now())
 ON CONFLICT (id) DO UPDATE
-SET experience_id=EXCLUDED.experience_id, min_group_size=EXCLUDED.min_group_size, max_group_size=EXCLUDED.max_group_size,
-    price=EXCLUDED.price, label=EXCLUDED.label;
+SET experience_id=EXCLUDED.experience_id,
+    min_group_size=EXCLUDED.min_group_size,
+    max_group_size=EXCLUDED.max_group_size,
+    quantity_min=EXCLUDED.quantity_min,
+    quantity_max=EXCLUDED.quantity_max,
+    price=EXCLUDED.price,
+    label=EXCLUDED.label;
 
 INSERT INTO public.availabilities (id, experience_id, start_at, end_at, slots_total, slots_booked, status, created_at) VALUES
 ('77777777-7777-7777-7777-777777777771','55555555-5555-5555-5555-555555555555',(now()+INTERVAL '7 days')::timestamptz,(now()+INTERVAL '7 days'+INTERVAL '4 hours')::timestamptz,6,0,'open',now()),
