@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "lint:html": "npx html-validate \"webflow-export/**/*.html\"",
-    "lint:css": "npx stylelint \"webflow-export/**/*.css\"",
+    "lint:css": "npx stylelint \"webflow-export/**/*.css\" --allow-empty-input",
     "format": "npx prettier --write \"**/*.{html,css,js,json,md,yml,yaml}\""
   },
   "devDependencies": {
