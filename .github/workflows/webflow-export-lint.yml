@@ -1,8 +1,11 @@
 name: webflow-export-lint
+
 on:
   pull_request:
-    paths:
-      - "webflow-export/**"
+    branches: [main]
+  push:
+    branches: [main]
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -11,3 +14,4 @@ jobs:
       - run: npm i
       - run: npm run lint:html
       - run: npm run lint:css
+
