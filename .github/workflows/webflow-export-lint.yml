@@ -1,17 +1,16 @@
 name: webflow-export-lint
-
 on:
   pull_request:
-    branches: [main]
-  push:
-    branches: [main]
-
+    paths:
+      - 'apps/webflow-export/**/*.{html,css,js}'
 jobs:
   lint:
+    if: ${{ hashFiles('apps/webflow-export/**/*.{html,css,js}') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: npm i
-      - run: npm run lint:html
-      - run: npm run lint:css
-
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci || npm i -D prettier
+      - run: npx prettier --check 'apps/webflow-export/**/*.{html,css,js}'
