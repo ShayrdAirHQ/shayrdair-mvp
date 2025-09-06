@@ -5,7 +5,8 @@
   "scripts": {
     "lint:html": "npx html-validate \"webflow-export/**/*.html\"",
     "lint:css": "npx stylelint \"webflow-export/**/*.css\" --allow-empty-input",
-    "format": "npx prettier --write \"**/*.{html,css,js,json,md,yml,yaml}\""
+    "format": "npx prettier --write \"**/*.{html,css,js,json,md,yml,yaml}\"",
+    "prettier-webflow": "prettier --write 'apps/webflow-export/**/*.{html,css,js}'"
   },
   "devDependencies": {
     "html-validate": "^8.7.4",
