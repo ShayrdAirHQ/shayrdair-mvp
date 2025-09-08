@@ -1,11 +1,10 @@
-name: lint
+name: Prettier (webflow export)
 on:
   pull_request:
     paths:
       - 'apps/webflow-export/**/*.{html,css,js}'
 jobs:
-  lint:
-    if: ${{ hashFiles('apps/webflow-export/**/*.{html,css,js}') != '' }}
+  prettier:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
