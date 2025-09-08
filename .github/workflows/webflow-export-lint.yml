@@ -1,11 +1,12 @@
 name: lint
 on:
   pull_request:
+    types: [opened, synchronize, reopened]
     paths:
       - 'apps/webflow-export/**/*.{html,css,js}'
+  workflow_dispatch:
 jobs:
   lint:
-    if: ${{ hashFiles('apps/webflow-export/**/*.{html,css,js}') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
