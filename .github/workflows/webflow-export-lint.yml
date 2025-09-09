@@ -12,4 +12,5 @@ jobs:
         with:
           node-version: '20'
       - run: npm ci || npm i -D prettier
+      - run: test -f apps/webflow-export/index.html || (echo "Missing index.html" && exit 1)
       - run: npx prettier --check 'apps/webflow-export/**/*.{html,css,js}' || echo "No files to lint"
