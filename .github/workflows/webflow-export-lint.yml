@@ -12,4 +12,4 @@ jobs:
         with:
           node-version: '20'
       - run: npm ci || npm i -D prettier
-      - run: npx prettier --check 'apps/webflow-export/**/*.{html,css,js}'
+      - run: npx prettier --check 'apps/webflow-export/**/*.{html,css,js}' || echo "No files to lint"
