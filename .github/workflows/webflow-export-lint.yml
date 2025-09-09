@@ -2,8 +2,6 @@ name: lint
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    paths:
-      - 'apps/webflow-export/**/*.{html,css,js}'
   workflow_dispatch:
 jobs:
   lint:
