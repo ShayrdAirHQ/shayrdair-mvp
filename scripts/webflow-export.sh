@@ -1,13 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Usage:
-#   scripts/webflow-export.sh                # auto-picks newest ~/Downloads/*.zip
-#   scripts/webflow-export.sh /path/to.zip   # explicit path
-
 ZIP_PATH="${1:-}"
 
-# If no arg, pick newest .zip in ~/Downloads
 if [ -z "${ZIP_PATH}" ]; then
   LATEST="$(ls -t "$HOME"/Downloads/*.zip 2>/dev/null | head -n 1 || true)"
   if [ -z "${LATEST}" ]; then
@@ -23,7 +18,7 @@ if [ ! -f "${ZIP_PATH}" ]; then
   exit 1
 fi
 
-BRANCH="chore/webflow-export-$(date -u +%Y%m%d)"
+BRANCH="chore/webflow-export-$(date -u +%Y%m%d-%H%M%S)"
 git checkout -b "${BRANCH}"
 
 TMPDIR="$(mktemp -d)"
