@@ -32,3 +32,13 @@ node_modules
 .netlify
 .env
 .env.*
+# Secrets & env
+.env
+.env.*
+*.key
+*.pem
+*.p12
+
+# OS/editor noise
+.DS_Store
+*.swp
