@@ -1,5 +1,6 @@
 # ShayrdAir — Database Schema (Reference)
 
+<<<<<<< HEAD
 ## users
 - id (uuid, pk)
 - email (text, unique, not null)
@@ -124,3 +125,7 @@
 - conversations/messages: participants-only
 - bookings: customer + guide on experience
 - pricing_tiers/experiences: public read, admin/guide write
+=======
+Generated: 2025-10-22 20:53:33 UTC
+
+>>>>>>> origin/main
