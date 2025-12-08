@@ -90,7 +90,7 @@ The MVP uses Supabase Realtime to store and sync conversations (`conversations` 
 
 ## 🗓️ Next Milestone
 
-**February 2026:** invite-only beta for first 100 climbers  
+**Q1/Q2 2026:** invite-only beta for first 100 climbers  
 (3 dynamically-priced climbing trips with Denver Mountain Guiding)
 
 ---
@@ -234,24 +234,21 @@ The MVP uses Supabase Realtime to sync live chat between customers and guides. F
 
 ---
 
-## 🧩 Architecture Decision Record — ADR-0002: Dynamic Pricing Model
+## 🧩 Dynamic Pricing Model
 
-**Decision:**  
-Implement dynamic group-pricing through the `pricing_tiers` table, where each experience has explicit party-size tiers (`experience_id`, `party_size`, `price_per_person`).
+ShayrdAir's core innovation is dynamic group pricing: costs decrease as more people join the same trip. This is implemented via the `pricing_tiers` table, which maps exact party sizes to per-person prices.
 
-**Rationale:**  
-- Transparent and easy to display on the front end.  
-- Scales cleanly across experiences and guides.  
-- Enables predictable Stripe Checkout pricing and simple webhook reconciliation.  
-- Keeps economics clear: larger groups lower per-person cost while maintaining guide margins.
+**Example:**
+| Party Size | Price/Person | Total |
+|------------|--------------|-------|
+| 1 person   | $700         | $700  |
+| 2 people   | $600         | $1,200 |
+| 4 people   | $450         | $1,800 |
 
-**Consequences:**  
-- Stripe webhooks must recalculate savings/refunds when new participants join.  
-- Requires a unique constraint on `(experience_id, party_size)` in Supabase.  
-- Price adjustments propagate automatically to all confirmed bookings.
+**Technical Implementation:**  
+See [ADR-0002 — Dynamic Pricing Model](https://github.com/ShayrdAirHQ/shayrdair-mvp/blob/main/docs/decisions/ADR-0002.md) for full architectural decision and rationale.
 
-**Status:**  
-Proposed — October 18, 2025
+---
 
 ---
 
@@ -267,6 +264,23 @@ Proposed — October 18, 2025
 ## Vision
 
 Combine experiences, gear, and membership into a single ecosystem for the modern adventurer — the one-stop Costco for the $1T outdoor economy.
+
+---
+
+## 📊 Interview & Product Documentation
+
+The following documents provide executive-level context and quantified achievements for stakeholder conversations:
+
+- [Product Overview](https://github.com/ShayrdAirHQ/shayrdair-mvp/blob/main/docs/PRODUCT_OVERVIEW.md)  
+  *Executive summary of ShayrdAir's mission, MVP scope, AI-native development methodology, and transferable learnings. Read this first for high-level context.*
+
+- [Achievements](https://github.com/ShayrdAirHQ/shayrdair-mvp/blob/main/docs/ACHIEVEMENTS.md)  
+  *Quantified technical accomplishments: 10-table schema with 21 foreign key relationships, RLS policies, 6-week build timeline, and velocity metrics.*
+
+- [Frontend Showcase](https://github.com/ShayrdAirHQ/shayrdair-mvp/blob/main/docs/frontend-showcase.md)  
+  *Responsive design strategy, Webflow MCP integration, design patterns replicated from Airbnb, and systematic CSS debugging methodology.*
+
+These documents complement the technical documentation below and provide context for non-technical stakeholders evaluating the project.
 
 ---
 
